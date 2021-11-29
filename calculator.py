@@ -94,13 +94,13 @@ class Calculator(QWidget):
             self.input.setText(line + param)
 
     def _operation(self, op):
-        if self.input.text()[len(self.input.text())-1] != '.':
+        if self.input.text()[len(self.input.text())-1] != '.' and len(self.input.text()) != 0:
             self.num_1 = float(self.input.text())
             self.op = op
             self.input.setText("")
 
     def _result(self):
-        if self.input.text()[len(self.input.text())-1] != '.':
+        if self.input.text()[len(self.input.text())-1] != '.' and len(self.input.text()) != 0:
             self.num_2 = float(self.input.text())
         if self.op == "+":
             self.input.setText(str(self.num_1 + self.num_2))
