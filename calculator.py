@@ -6,18 +6,21 @@ class Calculator(QWidget):
     def __init__(self):
         super(Calculator, self).__init__()
         self.vbox = QVBoxLayout(self)
+        self.sumbols = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '.']
 
         self.hbox_input = QHBoxLayout()
         self.hbox_first = QHBoxLayout()
         self.hbox_second = QHBoxLayout()
         self.hbox_third = QHBoxLayout()
         self.hbox_result = QHBoxLayout()
+        self.hbox_clear = QHBoxLayout()
 
         self.vbox.addLayout(self.hbox_input)
         self.vbox.addLayout(self.hbox_first)
         self.vbox.addLayout(self.hbox_second)
         self.vbox.addLayout(self.hbox_third)
         self.vbox.addLayout(self.hbox_result)
+        self.vbox.addLayout(self.hbox_clear)
 
         self.input = QLineEdit(self)
         self.hbox_input.addWidget(self.input)
@@ -70,11 +73,15 @@ class Calculator(QWidget):
         self.b_divide = QPushButton("/", self)
         self.hbox_result.addWidget(self.b_divide)
 
+        self.b_clear = QPushButton("CLEAR", self)
+        self.hbox_clear.addWidget(self.b_clear)
+
         self.b_plus.clicked.connect(lambda: self._operation("+"))
         self.b_minus.clicked.connect(lambda: self._operation("-"))
         self.b_multiply.clicked.connect(lambda: self._operation("*"))
         self.b_divide.clicked.connect(lambda: self._operation("/"))
         self.b_result.clicked.connect(self._result)
+        self.b_clear.clicked.connect(self._clear)
 
         self.b_1.clicked.connect(lambda: self._button("1"))
         self.b_2.clicked.connect(lambda: self._button("2"))
@@ -88,28 +95,47 @@ class Calculator(QWidget):
         self.b_0.clicked.connect(lambda: self._button("0"))
         self.b_dot.clicked.connect(lambda: self._button("."))
 
+    def _clear(self):
+        self.num_1 = ''
+        self.num_2 = ''
+        self.input.setText("")
+        self.op = None
+
     def _button(self, param):
         line = self.input.text()
-        if (line + param != '.') and not((line == '0') and (param != '.')):
-            self.input.setText(line + param)
+        if (line + param != '.') and not ((line == '0') and (param != '.')):
+            if (param == '.') and (line.count('.') != 1):
+                self.input.setText(line + param)
+            elif (param != '.'):
+                self.input.setText(line + param)
 
     def _operation(self, op):
-        if self.input.text()[len(self.input.text())-1] != '.' and len(self.input.text()) != 0:
+        if self._sumb_in_line() == True:
             self.num_1 = float(self.input.text())
             self.op = op
             self.input.setText("")
 
     def _result(self):
-        if self.input.text()[len(self.input.text())-1] != '.' and len(self.input.text()) != 0:
+        if self._sumb_in_line() == True:
             self.num_2 = float(self.input.text())
-        if self.op == "+":
-            self.input.setText(str(self.num_1 + self.num_2))
-        elif self.op == "-":
-            self.input.setText(str(self.num_1 - self.num_2))
-        elif self.op == "*":
-            self.input.setText(str(self.num_1 * self.num_2))
-        elif (self.op == "/") and (self.num_2 != 0):
-            self.input.setText(str(self.num_1 / self.num_2))
+            if self.op == "+":
+                self.input.setText(str(self.num_1 + self.num_2))
+            elif self.op == "-":
+                self.input.setText(str(self.num_1 - self.num_2))
+            elif self.op == "*":
+                self.input.setText(str(self.num_1 * self.num_2))
+            elif (self.op == "/") and (self.num_2 != 0):
+                self.input.setText(str(self.num_1 / self.num_2))
+
+    def _sumb_in_line(self):
+        if self.input.text()[len(self.input.text()) - 1] != '.' and len(self.input.text()) != 0:
+            flag = True
+            for i in range(len(self.input.text())):
+                if not (self.input.text()[i] in self.sumbols):
+                    flag = False
+            if flag == True:
+                return True
+        return False
 
 
 app = QApplication(sys.argv)
